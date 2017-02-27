@@ -163,6 +163,7 @@ for i = 1 : numepochs
         if nn.diagnostics == 1 && mod(i, nn.showDiagnostics) == 0
             normPerLayerUpdateW = computeNormPerLayer(histData.vW);
             ratioUpdateWoverW(batch,:) = normPerLayerUpdateW ./ normPerLayerW;
+            unusedvar=1;
         end
         
         L_perBatch(i,batch) = Lbatch;

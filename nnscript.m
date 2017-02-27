@@ -29,6 +29,12 @@ test_y  = double(datasetTargets{2});
 
 inputSize = size(train_x,2);
 
+% image normalisation: simply subtract mean
+meanImage = sum(train_x,1)/size(train_x,1);
+train_x = train_x - repmat(meanImage,size(train_x,1),1);
+test_x = test_x - repmat(meanImage,size(test_x,1),1);
+val_x = val_x - repmat(meanImage,size(val_x,1),1);
+
 if type == 1 % AE
    outputSize  = inputSize; % in case of AE it should be equal to the number of inputs
 
@@ -40,8 +46,9 @@ if type == 1 % AE
 elseif type == 2 % classifier
     outputSize = size(train_y,2); % in case of classification it should be equal to the number of classes
 
-    hiddenActivationFunctions = {'ReLu','ReLu','ReLu','softmax'};
-    hiddenLayers = [500 500 1000 outputSize]; 
+    hiddenActivationFunctions = {'ReLu','ReLu','ReLu','ReLu','softmax'};
+    ncm = 1; % NeuronCountMult
+    hiddenLayers = [500*ncm 1000*ncm 1000*ncm 1000*ncm outputSize]; 
     
 end
 
@@ -68,7 +75,7 @@ nn = paramsNNinit(hiddenLayers, hiddenActivationFunctions);
 
 % Set some NN params
 %-----
-nn.epochs = 5;
+nn.epochs = 25;
 
 % set initial learning rate
 nn.trParams.lrParams.initialLR = 0.01; 
@@ -102,8 +109,8 @@ nn.showPlot = 1;
 nn.dropoutParams.dropoutType = 0;
 
 % if 1 then early stopping is used
-nn.earlyStopping = 0;
-nn.max_fail = 10;
+nn.earlyStopping = 1;
+nn.max_fail = 8;
 
 nn.type = type;
 
