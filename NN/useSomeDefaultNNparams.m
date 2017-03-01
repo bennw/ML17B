@@ -36,33 +36,33 @@ if nn.pretraining == 1 && nn.dropoutParams.dropoutType ~= 0
         
         nn.epochs = 3000;
  
-%if NO pretrainig and dropout then use preferably max-norm constraint and a
+%if NO pretrainig and dropout then use preferably max-nor0m constraint and a
 %high learning rate + momentum with scheduling
 elseif nn.pretraining == 0 && nn.dropoutParams.dropoutType ~= 0
     
 
 %     e.g.
-    nn.trParams.lrParams.initialLR = 10;
+    nn.trParams.lrParams.initialLR = .2;
     nn.trParams.lrParams.scalingFactor = 0.998;
     nn.trParams.lrParams.schedulingType = 2;
-    
-    nn.trParams.momParams.initialMomentum = 0.5;
-    nn.trParams.momParams.finalMomentum = 0.99;
+   
+    nn.trParams.momParams.initialMomentum = 0.01;
+    nn.trParams.momParams.finalMomentum = 0.3;
     nn.trParams.momParams.momentumEpochLowerThres = 1;
-    nn.trParams.momParams.momentumEpochUpperThres = 500;
+    nn.trParams.momParams.momentumEpochUpperThres = 20;
     nn.trParams.momParams.schedulingType     = 1;
-    nn.epochs = 3000;
+    nn.epochs = 50;
     
 %     or 
-%     from “Dropout: A simple way to prevent neural networks from overfitting” by Srivastava at al. JMLR 2014 
-%     nn.trParams.sgd.momParams.momentum = 0.95;
+%     from ï¿½Dropout: A simple way to prevent neural networks from overfittingï¿½ by Srivastava at al. JMLR 2014 
+%     nn.trParams.sgd.momParams.momentum = 0.7;
 %     nn.trParams.sgd.momParams.scalingFactor = 1; %i.e. constant
 %     nn.trParams.sgd.momParams.schedulingType = 2;
     
     
     nn.weightConstraints.weightPenaltyL1 = 0;
     nn.weightConstraints.weightPenaltyL2 = 0;
-    nn.weightConstraints.maxNormConstraint = 3;
+    nn.weightConstraints.maxNormConstraint = 4;
 end
 
 

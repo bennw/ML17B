@@ -46,9 +46,9 @@ if type == 1 % AE
 elseif type == 2 % classifier
     outputSize = size(train_y,2); % in case of classification it should be equal to the number of classes
 
-    hiddenActivationFunctions = {'ReLu','ReLu','ReLu','ReLu','softmax'};
+    hiddenActivationFunctions = {'ReLu','ReLu','softmax'};
     ncm = 1; % NeuronCountMult
-    hiddenLayers = [500*ncm 1000*ncm 1000*ncm 1000*ncm outputSize]; 
+    hiddenLayers = [900 454 outputSize]; 
     
 end
 
@@ -75,7 +75,7 @@ nn = paramsNNinit(hiddenLayers, hiddenActivationFunctions);
 
 % Set some NN params
 %-----
-nn.epochs = 25;
+nn.epochs = 55;
 
 % set initial learning rate
 nn.trParams.lrParams.initialLR = 0.01; 
@@ -88,34 +88,31 @@ nn.trParams.lrParams.schedulingType = 1;
 
 nn.trParams.momParams.schedulingType = 1;
 %set the epoch where the learning will begin to increase
-nn.trParams.momParams.momentumEpochLowerThres = 10;
+nn.trParams.momParams.momentumEpochLowerThres = 5;
 %set the epoch where the learning will reach its final value (usually 0.9)
-nn.trParams.momParams.momentumEpochUpperThres = 15;
+nn.trParams.momParams.momentumEpochUp40perThres = 20;
 
 % set weight constraints
 nn.weightConstraints.weightPenaltyL1 = 0;
-nn.weightConstraints.weightPenaltyL2 = 0;
+nn.weightConstraints.weightPenaltyL2 = 0.1;
 nn.weightConstraints.maxNormConstraint = 4;
 
 % show diagnostics to monnitor training  
 nn.diagnostics = 1;
 % show diagnostics every "showDiagnostics" epochs
-nn.showDiagnostics = 5;
+nn.showDiagnostics = 100;
 
 % show training and validation loss plot
 nn.showPlot = 1;
 
-% use bernoulli dropout
-nn.dropoutParams.dropoutType = 0;
-
 % if 1 then early stopping is used
-nn.earlyStopping = 1;
-nn.max_fail = 8;
+nn.earlyStopping = 0;
+nn.max_fail = 7;
 
 nn.type = type;
 
 % set the type of weight initialisation (check manual for details)
-nn.weightInitParams.type = 8;
+nn.weightInitParams.type = 9;
 
 % set training method
 % 1: SGD, 2: SGD with momentum, 3: SGD with nesterov momentum, 4: Adagrad, 5: Adadelta,
@@ -129,30 +126,32 @@ nn.trainingMethod = 2;
 nn.W = W;
 nn.biases = biases;
 
+
+% use bernoulli dropout
+nn.dropoutParams.dropoutType = 1;
 % if dropout is used then use max-norm constraint and a
 %high learning rate + momentum with scheduling
 % see the function below for suggested values
-% nn = useSomeDefaultNNparams(nn);
+nn = useSomeDefaultNNparams(nn);
 
 if type == 1 % AE
     [nn, Lbatch, L_train, L_val]  = trainNN(nn, train_x, train_x, val_x, val_x);
 elseif type == 2 % classifier
     [nn, Lbatch, L_train, L_val, clsfError_train, clsfError_val]  = trainNN(nn, train_x, train_y, val_x, val_y);
- end
+end
 
 nn = prepareNet4Testing(nn);
 
 % visualise weights of first layer
-figure()
-visualiseHiddenLayerWeights(nn.W{1},visParams.col,visParams.row,visParams.noSubplots);
+%figure()
+%visualiseHiddenLayerWeights(nn.W{1},visParams.col,visParams.row,visParams.noSubplots);
 
 
 if type == 1 % AE
     [stats, output, e, L] = evaluateNNperformance( nn, test_x, test_x);
 elseif type == 2 % classifier
     [stats, output, e, L] = evaluateNNperformance( nn, test_x, test_y);
- end
-
+end
 
 
 
