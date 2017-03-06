@@ -47,7 +47,10 @@ elseif type == 2 % classifier
     outputSize = size(train_y,2); % in case of classification it should be equal to the number of classes
 
     hiddenActivationFunctions = {'ReLu','ReLu','softmax'};
-    ncm = 1; % NeuronCountMult
+    m = 7;
+    N = 21250;
+    firstLayer = floor(2*sqrt(N/(m+2))+sqrt(N*(m+2)))+1;
+    secondLayer = floor(m*sqrt(N/(m+2)))+1;
     hiddenLayers = [900 454 outputSize]; 
     
 end
@@ -106,8 +109,8 @@ nn.showDiagnostics = 100;
 nn.showPlot = 1;
 
 % if 1 then early stopping is used
-nn.earlyStopping = 0;
-nn.max_fail = 7;
+nn.earlyStopping = 1;
+nn.max_fail = 20;
 
 nn.type = type;
 
